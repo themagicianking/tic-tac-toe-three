@@ -10,26 +10,30 @@ module Board
 end
 
 class Player
-  def initialize(name, symbol)
-    @name = name
-    @symbol = symbol
-  end
-
   attr_reader :name, :symbol
 
-  def check_win
-    # check all the conditions that the board can have that would mean a win
-    # maybe take this from the board module
+  def initialize(name, symbol)
+    @name = name.chomp
+    @symbol = symbol.chomp
   end
 end
 
 class Game
   include Board
-  attr_reader :board_data
+  attr_reader :board_data, :name_one, :symbol_one,
+  :name_two, :symbol_two, :player_one, :player_two
 
-  def initialize(player_one, player_two)
-    @player_one = player_one
-    @player_two = player_two
+  def initialize
+    puts "Hello! Please enter player one's name:"
+    @name_one = gets
+    puts "Please enter your symbol:"
+    @symbol_one = gets
+    puts "Please enter player two's name:"
+    @name_two = gets
+    puts "Please enter your symbol:"
+    @symbol_two = gets
+    @player_one = Player.new(name_one, symbol_one)
+    @player_two = Player.new(name_two, symbol_two)
     @board_data = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}
   end
 
@@ -69,9 +73,34 @@ class Game
   end
 end
 
-player_one = Player.new("thane", "x")
-player_two = Player.new("turkey", "o")
-new_game = Game.new(player_one, player_two)
-# puts new_game.display(new_game.board_data)
-# new_game.turn(player_one.name, player_one.symbol)
-puts new_game.check_win("x", { a: "9", b: "x", c: "x", d: 4, e: 5, f: 6, g: 7, h: 8, i: 9})
+def endgame(winner)
+  if winner == "none"
+    puts "It's a tie! Thanks for playing :)"
+  else
+    puts "Congrats, #{winner}, you win!"
+  end
+end
+
+winner = "none"
+new_game = Game.new
+new_game.display(new_game.board_data)
+
+for i in 1..4
+  new_game.turn(new_game.player_one.name, new_game.player_one.symbol)
+  if new_game.check_win(new_game.player_one.symbol, new_game.board_data)
+    winner = new_game.player_one.name
+    break
+  else
+    new_game.turn(new_game.player_two.name, new_game.player_two.symbol)
+    if new_game.check_win(new_game.player_two.symbol, new_game.board_data)
+      winner = new_game.player_two.name
+      break
+    end
+  end
+end
+
+if winner == "none"
+  new_game.turn(new_game.player_one.name, new_game.player_one.symbol)
+end
+
+endgame(winner)
