@@ -13,8 +13,8 @@ class Player
   attr_reader :name, :symbol
 
   def initialize(name, symbol)
-    @name = name.chomp
-    @symbol = symbol.chomp
+    @name = name
+    @symbol = symbol
   end
 end
 
@@ -25,13 +25,45 @@ class Game
 
   def initialize
     puts "Hello! Please enter player one's name:"
-    @name_one = gets
+    @name_one = gets.chomp
     puts "Please enter your symbol:"
-    @symbol_one = gets
+    @symbol_one = gets.chomp
+    if @symbol_one.to_i > 0 && @symbol_one.to_i < 10
+      puts "Error! Your symbol cannot be a number that is on the board!"
+      @symbol_one = "x"
+      puts "Your symbol is now x."
+    end
+    if @symbol_one == ""
+      puts "Error! You cannot have a blank symbol!"
+      @symbol_one == "x"
+    end
     puts "Please enter player two's name:"
-    @name_two = gets
+    @name_two = gets.chomp
+    if @name_two == @name_one
+      puts "Error! You cannot have the same name!"
+      @name_two = player_two
+    end
     puts "Please enter your symbol:"
-    @symbol_two = gets
+    @symbol_two = gets.chomp
+    if @symbol_two.to_i > 0 && @symbol_two.to_i < 10
+      puts "Error! Your symbol cannot be a number that is on the board!"
+      @symbol_two = "o"
+      puts "Your symbol is now o."
+    end
+    if @symbol_two == ""
+      puts "Error! You cannot have a blank symbol!"
+      @symbol_two == "o"
+    end
+    if @symbol_two == @symbol_one
+      puts "Error! You cannot have the same symbol!"
+      if @symbol_one == "x"
+        @symbol_two = "o"
+        puts "Your symbol is now o."
+      else
+        @symbol_two = "x"
+        puts "Your symbol is now x."
+      end
+    end
     @player_one = Player.new(name_one, symbol_one)
     @player_two = Player.new(name_two, symbol_two)
     @board_data = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}
@@ -39,11 +71,19 @@ class Game
 
   def turn(name, symbol)
     puts "Hello #{name}, where would you like to place your symbol?"
-    choice = gets.to_i
+    choice = gets.chomp.to_i
     change = 0
     board_data.each do |key, value| 
       if choice == value
         change = key
+      end
+    end
+    if change == 0
+      puts "Invalid input! Your choice will be selected for you."
+      board_data.find do |key, value| 
+        if value < 10 && value > 0
+          change = key
+        end
       end
     end
     board_data[change] = symbol
