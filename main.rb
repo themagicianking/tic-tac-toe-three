@@ -121,26 +121,40 @@ def endgame(winner)
   end
 end
 
-winner = "none"
-new_game = Game.new
-new_game.display(new_game.board_data)
+def play
+  winner = "none"
+  new_game = Game.new
+  new_game.display(new_game.board_data)
 
-for i in 1..4
-  new_game.turn(new_game.player_one.name, new_game.player_one.symbol)
-  if new_game.check_win(new_game.player_one.symbol, new_game.board_data)
-    winner = new_game.player_one.name
-    break
-  else
-    new_game.turn(new_game.player_two.name, new_game.player_two.symbol)
-    if new_game.check_win(new_game.player_two.symbol, new_game.board_data)
-      winner = new_game.player_two.name
+  for i in 1..4
+    new_game.turn(new_game.player_one.name, new_game.player_one.symbol)
+    if new_game.check_win(new_game.player_one.symbol, new_game.board_data)
+      winner = new_game.player_one.name
       break
+    else
+      new_game.turn(new_game.player_two.name, new_game.player_two.symbol)
+      if new_game.check_win(new_game.player_two.symbol, new_game.board_data)
+        winner = new_game.player_two.name
+        break
+      end
     end
   end
+
+  if winner == "none"
+    new_game.turn(new_game.player_one.name, new_game.player_one.symbol)
+  end
+
+  endgame(winner)
 end
 
-if winner == "none"
-  new_game.turn(new_game.player_one.name, new_game.player_one.symbol)
+playtime = "Y"
+
+def continue?
+  puts "Would you like to play again? Y or N:"
+  playtime = gets.chomp
 end
 
-endgame(winner)
+while playtime == "Y"
+  play
+  continue?
+end
